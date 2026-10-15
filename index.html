@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>全球賺錢趨勢 2026 — E-book</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; }
+body { background:#16151d; overflow:hidden; font-family:"PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif; }
+#stage { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+#loading { color:#8d8798; font-size:14px; letter-spacing:2px; }
+#book { position:relative; width:min(100vw,480px); flex-shrink:0; }
+.pgsheet { position:absolute; inset:0; display:none; }
+.pgsheet.active { display:block; }
+.pgsheet.leaving { display:block; pointer-events:none; }
+.pgsheet.enter-r { animation: inR .3s ease-out both; }
+.pgsheet.enter-l { animation: inL .3s ease-out both; }
+.pgsheet.leave-l { animation: outL .3s ease-out both; }
+.pgsheet.leave-r { animation: outR .3s ease-out both; }
+@keyframes inR { from { transform:translateX(6%); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes inL { from { transform:translateX(-6%); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes outL { from { transform:none; opacity:1; } to { transform:translateX(-6%); opacity:0; } }
+@keyframes outR { from { transform:none; opacity:1; } to { transform:translateX(6%); opacity:0; } }
+.page { width:100%; height:100%; background:#faf6ee; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 0 22px rgba(0,0,0,.45); }
+.coverp { background:#0d0f18; }
+.coverimg { width:100%; height:100%; object-fit:cover; display:block; }
+.pg-header { flex:none; padding:14px 10px 12px; display:flex; align-items:center; justify-content:center; font-size:calc(var(--fs)*.6); letter-spacing:2px; color:#b8ad96; border-bottom:1px solid #e4dccb; margin:0 20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pg-body { flex:1; min-height:0; overflow:hidden; padding:16px 22px 4px; }
+.pg-footer { flex:none; padding:9px 0 14px; display:flex; align-items:center; justify-content:center; font-size:calc(var(--fs)*.66); color:#a4987f; }
+.pg-body p { font-family:"Songti TC","Noto Serif CJK TC","Noto Serif TC",PMingLiU,serif; font-size:var(--fs); line-height:1.68; color:#2e2a24; margin-bottom:.7em; text-align:justify; }
+.pg-body h2 { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*1.28); color:#8a6d2f; margin:.8em 0 .55em; letter-spacing:.5px; }
+.pg-body h3 { font-size:calc(var(--fs)*1.1); color:#5f5342; margin:.7em 0 .4em; }
+.pg-body ul { margin:0 0 .35em; list-style:none; }
+.pg-body li { list-style:none; font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:var(--fs); line-height:1.66; color:#2e2a24; margin-bottom:.5em; padding-left:22px; position:relative; text-align:justify; }
+.pg-body ul li::before { content:"◆"; position:absolute; left:1px; top:2px; color:#b9994f; font-size:10px; }
+.pg-body .num-li { display:flex; align-items:flex-start; gap:9px; margin-bottom:.5em; }
+.pg-body .num-badge { flex:none; width:20px; height:20px; border-radius:50%; background:#b9994f; color:#faf6ee; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; margin-top:3px; }
+.pg-body .num-text { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:var(--fs); line-height:1.66; color:#2e2a24; text-align:justify; }
+.pg-body a { color:#1d5fa4; text-decoration:none; border-bottom:1px solid #a8c2dd; }
+.end-orn { text-align:center; color:#b9994f; letter-spacing:10px; font-size:calc(var(--fs)*.8); margin-top:1.6em; }
+.ch-head { margin:4px 0 1em; }
+.ch-num { font-size:calc(var(--fs)*.78); letter-spacing:7px; color:#b9994f; margin-bottom:12px; }
+.ch-title { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*1.6); color:#2e2a24; line-height:1.4; }
+.ch-rule { width:44px; height:3px; background:#b9994f; margin-top:14px; }
+.plain { display:flex; align-items:center; justify-content:center; }
+.titlepage { text-align:center; padding:0 26px; }
+.tp-kicker { font-size:calc(var(--fs)*.82); letter-spacing:6px; color:#b9994f; margin-bottom:2.4em; }
+.tp-title { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*2.6); color:#2e2a24; letter-spacing:4px; }
+.tp-year { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*1.9); color:#b9994f; letter-spacing:8px; margin-top:.4em; }
+.tp-rule { width:56px; height:2px; background:#b9994f; margin:2em auto; }
+.tp-sub { font-size:calc(var(--fs)*1.2); color:#2e2a24; letter-spacing:2px; }
+.tp-line { font-size:calc(var(--fs)*.85); color:#6f6759; margin-top:1.2em; line-height:1.85; }
+.tp-ed { font-size:calc(var(--fs)*.78); color:#a4987f; margin-top:2.6em; letter-spacing:1px; }
+.toc { padding:14px 6px 0; height:100%; display:flex; flex-direction:column; }
+.toc-h { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*1.5); color:#2e2a24; letter-spacing:10px; text-align:center; margin-bottom:8px; flex:none; }
+.toc-rows { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-evenly; }
+.toc-row { display:flex; align-items:baseline; cursor:pointer; }
+.toc-row:active .toc-name { color:#8a6d2f; }
+.toc-lab { font-size:calc(var(--fs)*.72); color:#b9994f; width:4em; flex:none; }
+.toc-name { font-family:"Songti TC","Noto Serif CJK TC",serif; font-size:calc(var(--fs)*.95); color:#2e2a24; }
+.toc-dots { flex:1; border-bottom:1px dotted #c9bfa8; margin:0 8px; }
+.toc-pn { font-size:calc(var(--fs)*.8); color:#8a7a5e; }
+#hud { margin-top:12px; color:#8d8798; display:flex; gap:18px; align-items:center; font-size:14px; flex-shrink:0; }
+#hud button { background:#2b2a35; color:#d8d3e0; border:1px solid #44425399; border-radius:10px; padding:9px 18px; font-size:14px; cursor:pointer; }
+#pinfo { cursor:pointer; padding:4px 8px; border-radius:6px; }
+#pinfo:active { background:#2b2a3550; }
+#pgoto { width:52px; background:#2b2a35; color:#f1eef7; border:1px solid #6b6880; border-radius:6px; padding:4px 6px; font-size:14px; text-align:center; }
+#pgo-btn { background:#b9994f; color:#1b1a22; border:none; border-radius:6px; padding:5px 10px; font-size:13px; cursor:pointer; margin-left:4px; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="loading" style="position:fixed;left:0;right:0;top:50%;text-align:center;"><div>排版中…</div><div style="font-size:11px;margin-top:10px;color:#7a7486;">超過10秒未開到？請撳「⋯」→「用瀏覽器開啟」(Chrome)</div><div id="lver" style="font-size:11px;margin-top:6px;color:#666;">v78.1・2026-10-16</div></div>
+<script>document.getElementById('lver').textContent='v78.1 JS運行中';</script>
+<script id="book-data" type="application/json">{"cover": "https://media.base44.com/files/public/6abdd80148d69067ff74c821/96066d364_ebook_cover.jpg", "title_html": "<div class=\"titlepage\">\n<div class=\"tp-kicker\">為香港一人公司度身訂造的實戰指南<\/div>\n<div class=\"tp-title\">全球賺錢趨勢<\/div>\n<div class=\"tp-year\">2026<\/div>\n<div class=\"tp-rule\"><\/div>\n<div class=\"tp-sub\">六大趨勢 × 90 日行動計劃<\/div>\n<div class=\"tp-line\">深入分析・香港視角・實戰指引<\/div>\n<div class=\"tp-ed\">2026 年 10 月版・繁體中文<\/div>\n<\/div>", "colophon_html": "<div class=\"titlepage colophon\">\n<div class=\"tp-kicker\">版權與聲明<\/div>\n<div class=\"tp-sub\" style=\"margin-top:36px\">本書內容僅供教育與個人參考用途，不構成任何財務、投資或法律建議。<\/div>\n<div class=\"tp-line\" style=\"margin-top:26px\">書中所有市場數據與個案數字均來自公開報道，並標明來源；<br>出版前請以最新年度官方報告核實。<\/div>\n<div class=\"tp-line\" style=\"margin-top:22px\">案例收入屬個別成功個案，存在倖存者偏差，<br>不應視為可預期的平均結果。<\/div>\n<div class=\"tp-ed\" style=\"margin-top:70px\">全球賺錢趨勢 2026・2026 年 10 月版<\/div>\n<\/div>", "chapters": [{"lab": "前言", "name": "前言與本書定位", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">前言<\/div><div class=\"ch-title\">前言與本書定位<\/div><div class=\"ch-rule\"><\/div><\/div>", "<p>呢本 e-book 唔係又一本「全球趨勢合集」，而係一份為你自己度身訂造嘅實戰指南：每個趨勢都會答三條問題 —— 呢個趨勢嘅真實規模係幾多？香港人玩呢個趨勢嘅具體玩法係咩？以你而家擁有嘅資產，第一步應該喺未來 90 日做啲咩？<\/p>", "<h2>點樣用呢本書<\/h2>", "<p>每章依固定次序：概念速覽（關鍵詞）→ 機制拆解（錢點流）→ 模擬例子（數字示範）→ 香港視角 → 90 日行動計劃 → 誠實提醒。趕時間可以直接跳去行動計劃；但概念同機制嗰兩節，係幫你「知自己緊做緊乜」而寫——執行嗰陣先唔會動作變形。<\/p>", "<p>本書立場：唔賣夢。每個趨勢都會講「點解得」同「點解可能唔得」。你嘅決定唔應該基於書入面嘅成功故事，應該基於你自己跑完一個 90 日循環之後嘅實測數據。<\/p>", "<p>開波先俾一個最新嘅真實數據：Ownr（RBC 旗下企業註冊平台）委託 Ipsos 喺 2026 年 9 月訪問咗 1,501 個 18 歲以上加拿大人，近四分之一已經有副業收入，另外四分之一話考慮緊開始；有副業嗰批人當中，39% 話為咗補充收入、33% 為咗應付生活成本、26% 為咗還債。即係話——推動副業嘅主流唔係「追夢」，係開支壓力。兩點要老實講：第一，呢個係加拿大調查，唔可以直接當香港數；第二，委託方係賣企業註冊服務嘅平台，佢有興趣將副業講成「可以變正式生意」。數字照讀，動機照記，但結論要自己驗證。<\/p>", "<h3>成本書嘅三個底層概念<\/h3>", "<ul><li>線性收入：賣一次時間賺一次錢（接 job、代售）。穩陣，但上限係你嘅時間。<\/li><\/ul>", "<ul><li>槓桿收入：同一份功夫，重複賣（影片、模板、課程）。做一次，賣 N 次。<\/li><\/ul>", "<ul><li>資產收入：一啲嘢喺度幫你賺錢（存貨升值、訂閱名單、自動化工作流）。本書六個趨勢，本質都係教你由線性慢慢搬去槓桿同資產。<\/li><\/ul>", "<p>所以全書嘅 90 日計劃都用 70/20/10 分配：70% 時間餵住現金流（線性），20% 起槓桿資產（內容、產品），10% 試新位。第七章會再解呢個點解咁分。<\/p>", "<h2>原摘要速覽（2026）<\/h2>", "<ul><li>1. AI 相關副業崛起：數據標註、AI 自動化代理，時薪可達 US$200；AI 工具令一人公司成為主流<\/li><\/ul>", "<ul><li>2. 一人公司／數碼產品：利潤率 70-95%，創作者經濟規模達 US$2,500 億級<\/li><\/ul>", "<ul><li>3. 直播帶貨：美國由 2022 年 US$200 億增至 2026 年預計 US$680 億（年複合增長約 36%），亞洲更成熟<\/li><\/ul>", "<ul><li>4. 短影音主導流量：演算法全面轉向完播率，系列化＋穩定更新勝過單條爆款<\/li><\/ul>", "<ul><li>5. 收藏品／中古轉售：全球玩具市場 2026 年突破 US$1,380 億，限量版同 vintage 轉售係 reseller 最賺品類之一<\/li><\/ul>", "<ul><li>6. 內容變現多元化：頂級創作者疊加多個收入流（聯盟行銷、贊助、自家產品、會員訂閱）<\/li><\/ul>", "<h2>香港本地化基礎數據<\/h2>", "<ul><li>市場規模：香港約 750 萬人，任何網上生意一開始就應諗跨境，尤其日語市場<\/li><\/ul>", "<ul><li>支付：轉數快 FPS、AlipayHK、WeChat Pay HK；跨境用 Stripe、PayPal<\/li><\/ul>", "<ul><li>平台：二手／收藏品用 Carousell；直播用 IG Live、FB Live；跨境用 eBay、日本 Mercari／Yahoo Auctions（經出品代行）<\/li><\/ul>", "<ul><li>稅務：首 HK$200 萬利潤稅率 8.25%，記得做商業登記<\/li><\/ul>", "<ul><li>物流：香港郵政、順豐；寄日本快而平，係賣日本 vintage 貨嘅天然優勢<\/li><\/ul>", "<h2>參考來源與延伸閱讀（2026-10-06 核實更新）<\/h2>", "<p>以下係摘要入面各項數據嘅參考來源。標「⚠ 需再核實」嘅項目出版前要搵最新一年官方數字。<\/p>", "<h3>前言：副業普及同動機（加拿大調查）<\/h3>", "<ul><li>來源：<a href=\"https://www.bnnbloomberg.ca/business/economics/2026/10/08/necessity-and-opportunity-turning-a-side-hustle-into-a-small-business/\" target=\"_blank\">BNN Bloomberg — Many side hustles can be turned into business opportunities, CEO says（Ownr/RBC 委託 Ipsos 調查，1,501 名加拿大受訪者，2026-10-08 報道）<\/a><\/li><\/ul>", "<h3>第一章：AI 相關副業<\/h3>", "<ul><li>AI 訓練平台行情參考（一般標註時薪約 US$20-40，專業任務更高）：<a href=\"https://www.indeed.com/cmp/Dataannotation/reviews/this-is-not-a-typical-job?id=075c6be6bbaef2be\" target=\"_blank\">Indeed － DataAnnotation 評論<\/a><\/li><\/ul>", "<ul><li>「時薪可達 US$200」係針對高專業度任務（法、醫、程式評估）嘅媒體報道口徑，一般標註遠低於此數 ⚠ 建議引用時註明係上限個案<\/li><\/ul>", "<ul><li>YouTube 收緊模板化 AI 內容變現（2025-07-15 起「inauthentic content」政策）：<a href=\"https://support.google.com/youtube/answer/1311392\" target=\"_blank\">YouTube 官方政策頁<\/a>｜<a href=\"https://qz.com/youtube-takes-aim-at-mass-produced-ai-videos\" target=\"_blank\">Quartz 報道<\/a><\/li><\/ul>", "<h3>第二章：創作者經濟與數碼產品<\/h3>", "<ul><li>Goldman Sachs 2023 估算：創作者經濟 2023 年約 US$250B，2027 年接近半兆美元：<a href=\"https://digiday.com/marketing/in-graphic-detail-inside-the-creator-economys-ma-boom/\" target=\"_blank\">Digiday 報道<\/a>｜<a href=\"https://www.shortsintel.com/statistics/creator-economy\" target=\"_blank\">Creator economy 統計彙整<\/a><\/li><\/ul>", "<h3>第三章：直播帶貨<\/h3>", "<ul><li>美國 live shopping 2026 年預計達 US$68B（Coresight Research 口徑）：<a href=\"https://digiday.com/media-buying/how-agencies-are-testing-live-shopping-while-seeing-potential-in-accelerating-conversions/\" target=\"_blank\">Digiday<\/a>｜<a href=\"https://www.ringly.io/blog/social-commerce-statistics-2026\" target=\"_blank\">2026 社商務統計彙整<\/a><\/li><\/ul>", "<h3>第五章：玩具與中古轉售<\/h3>", "<ul><li>全球玩具市場趨勢（2025 全球銷售 +7%，收藏品與 kidult 帶動）：<a href=\"https://www.circana.com/news/toy-industry-reports/\" target=\"_blank\">Circana 玩具業報告庫<\/a>｜<a href=\"https://finance.yahoo.com/news/global-toy-industry-rebounds-2025-181100949.html\" target=\"_blank\">GlobeNewswire／Yahoo 報道<\/a><\/li><\/ul>", "<ul><li>「US$138B」為業界綜合預測口徑，Circana 官方公布嘅係增速方向 ⚠ 出版前用最新年度 Circana G12 數字重新核實<\/li><\/ul>", "<ul><li>亞洲二手市場動機（慳錢 62%、環保 21%）：<a href=\"https://vietnamnews.vn/media-outreach/1095324/carousell-recommerce-index-finds-indonesians-have-the-most-earning-potential-for-preloved-items-in-the-region.html\" target=\"_blank\">Carousell Recommerce Index 報道<\/a>｜<a href=\"https://press.carousell.com/wp-content/uploads/2026/06/Carousell-Group-Circular-Economy-Impact-Report-Third-edition.pdf\" target=\"_blank\">Carousell 循環經濟影響報告<\/a><\/li><\/ul>", "<h3>香港本地化數據<\/h3>", "<ul><li>兩級制利得稅（首 HK$200 萬 8.25%）：<a href=\"https://www.ird.gov.hk/eng/faq/2tr.htm\" target=\"_blank\">稅務局 FAQ<\/a>｜<a href=\"https://www.gov.hk/en/residents/taxes/taxfiling/taxrates/profitsrates.htm\" target=\"_blank\">gov.hk 稅率表<\/a><\/li><\/ul>", "<ul><li>香港人口約 750 萬：<a href=\"https://www.censtatd.gov.hk/\" target=\"_blank\">政府統計處<\/a><\/li><\/ul>", "<h3>出版前檢查清單<\/h3>", "<ul><li>所有市場規模數字，出版時以最新年度報告再核實一次（尤其 toy market 同 live commerce 兩個每年更新嘅預測）<\/li><\/ul>", "<ul><li>「完播率主導演算法」屬業界共識方向，未有單一官方文獻 ⚠ 建議以平台創作者官方指南（YouTube Creator Insider、IG @creators）嘅最新說法佐證<\/li><\/ul>", "<ul><li>每日「今日搵錢快報」搵到嘅新案例同來源，會按你嘅指示摻入對應章節，來源連結照這個格式補落嚟<\/li><\/ul>", "<h3>最新訊號（2026-10-15 加入）：創業教育變成職業平台嘅長期服務<\/h3>", "<p>《Fortune》2026 年 10 月 12 日報道，LinkedIn 正試辦 Academy of Economic Opportunity，教在職人士自己創業嘅技能。重點唔係「LinkedIn 開班」，而係創業教育由一次過嘅課程，慢慢變成職業平台嘅長期服務——平台嘅賣點由「幫你搵工」延伸到「教你做老闆」。老實講：目前只係試辦階段，報道冇任何學員收入或課程成效數據，上完堂唔等於賺到錢。本書用佢做 2026 年開場訊號之一，正正因為佢代表「人人老闆化」嘅大方向，同時提醒你：培訓係服務，唔係收入保證。<\/p>", "<ul><li>來源：<a href=\"https://fortune.com/2026/10/12/linkedin-piloting-academy-jobs-businesses/\" target=\"_blank\">Fortune — LinkedIn is piloting a school to teach workers how to become their own bosses–no degree required（2026-10-12）<\/a><\/li><\/ul>"]}, {"lab": "第一章", "name": "AI 相關副業崛起", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第一章<\/div><div class=\"ch-title\">AI 相關副業崛起<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>呢個趨勢其實係三條唔同嘅財路，成日被混為一談：<\/p>", "<ul><li>（a）AI 訓練數據工作（標註、評估、紅隊測試）：有報道指時薪高見 US$200，但平台派單唔穩定，需求隨模型代際更迭波動。適合當過渡性收入，唔適合當主力。<\/li><\/ul>", "<ul><li>（b）AI 自動化代理（automation agency）：幫中小企搭建回覆客戶、生產內容、整合報表嘅自動化流程，收 setup fee 加月費 retainer。呢條先係真正可規模化嘅服務生意。<\/li><\/ul>", "<ul><li>（c）AI 工具自用：唔係賣工具，係用工具壓低自己一人公司嘅營運成本 —— 呢條係最被低估嘅「收入」，因為慳到嘅時間可以直接變成其他收入流嘅產能。<\/li><\/ul>", "<p>經濟邏輯：企業採用 AI 嘅速度遠快過員工技能更新，出現「識用 AI 嘅人服務唔識用嘅人」嘅顧問缺口。關鍵位：報酬唔係來自「識用 ChatGPT」，而係來自「用 AI 幫客人慳到真金白銀嘅時間同人工」—— 賣嘅係結果，唔係技術。<\/p>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>呢章成日出現嘅字，全部用返做生意嘅角度去理解：<\/p>", "<ul><li>自動化（Automation）：將重複步驟連起嚟自動做，例如「新貨到 → 影相 → 上架 → 出 post」一鍵完成。<\/li><\/ul>", "<ul><li>工作流（Workflow）：一串自動化步驟嘅正式講法；你本書入面嘅「生產線」就係工作流。<\/li><\/ul>", "<ul><li>API：程式同程式之間嘅對講機。你要識嘅唔係寫 code，係「邊個服務可以同邊個講嘢」。<\/li><\/ul>", "<ul><li>Agent（智能體）：AI 唔止答你問題，仲會自己行幾步——搵資料、整理、交功課。<\/li><\/ul>", "<ul><li>用量成本：AI 工具多數按用量收費。「賣得出」同「扣完工具費仲有得賺」係兩回事。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>最容易入場嘅 AI 副業，唔係「賣 AI」，係「用 AI 令原本貴嘅服務平咗一半」。例如以前幫小店整三語產品文案同社交 post 要成個禮拜人工，而家用工作流一日搞掂，同一份時間你就可以服務三間舖，收同一樣錢。<\/p>", "<p>收費結構有兩種：一次性（幫客戶整好條 workflow 收一筆）同月費（維護＋小改動）。真正令 AI 副業變得唔使每次重新搵客嘅，係月費嗰部分。<\/p>", "<p>報價之前永遠先計成本底線：API 同工具嘅月費係你嘅成本，扣完先係你袋嗰份。呢個習慣一開始就養成，後面所有定價都係同一條數。<\/p>", "<h2>香港視角<\/h2>", "<p>香港中小企（零售、餐飲、貿易）極多 manual process，對「慳一個人手」極敏感。你嘅三語能力令你可以服務 HK 客戶之餘，接觸日企在港辦公室同日本中小企。<\/p>", "<h2>你的獨特優勢<\/h2>", "<p>你已經有一條運行緊嘅全自動內容生產線：日文博客草稿、短影音腳本同成片、每日早報，全部自動化。呢條 pipeline 本身就係最好嘅產品 demo —— 客人唔使聽你講概念，直接睇到成品每星期自己走出嚟。<\/p>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>幫一間小店做「新貨自動上架＋三語 post」：整條 workflow 用咗兩個週末，之後每月收 HK$800 維護費；工具費每月約 HK$100，淨 HK$700。如果同一套嘢重複賣俾五間同類小店，就係每月 HK$3,500 嘅自動化收入。<\/p>", "<p>重點唔係個數字——係「同一套 workflow 可以複製俾同類客」，你嘅邊際成本接近零。呢個就係第一章同成個 2026 趨勢嘅核心邏輯。<\/p>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1-2 週：將現有自動化寫成一頁 case study，量化（每週慳幾多小時、內容產出量倍增幾多）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 3-4 週：定義服務包「小型企業 AI 內容自動化 setup」：定價 HK$8,000-15,000 一次性＋HK$1,500/月維護（建議價，測試後調整）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 5-8 週：約談 10 個目標客戶（IG 店主、中小企朋友），免費幫 1-2 個做 pilot，換 testimonial 同實際數據。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">第 9-12 週：用 pilot 成果整 landing page 同 IG post，正式收費接第二單。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>賣「AI」兩個字多過賣結果：客戶唔要 AI，佢要「慳到嘅時間」同「多咗嘅生意」。報價單寫效果，唔寫技術名。<\/li><\/ul>", "<ul><li>低價搶客然後冇售後：自動化嘅錢喺維護費同升級，唔係嗰一筆首期。<\/li><\/ul>", "<ul><li>唔設使用上限：客戶需求會慢慢膨脹，「每月小改」唔寫清楚，好易變「每月二十小時」。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>呢條係「賣時間」嘅升級版，唔係被動收入；接客前確保自己每週有約 10 小時餘裕。<\/li><\/ul>", "<ul><li>數據標註平台收入波動大，最多當零用錢，唔好寫入主收入計劃。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>開工前答呢三條，答唔出即係仲未ready：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你而家每星期做緊邊件事，係重複超過三次、又唔使點判斷嘅？嗰件就係你第一個自動化目標。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">客戶用咗你嘅服務之後，佢自己慳到幾多錢或者幾多時間？呢個先係你報價嘅基準。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">如果你成個月唔掂條 workflow，佢會唔會照行？唔會＝佢仲未算真正自動化。<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>2026 AI 副業三條路的真與假（用獨立數據，唔好用賣課者嘅數字）<\/li><\/ul>", "<ul><li>自動化代理由零到第一單的完整流程<\/li><\/ul>", "<ul><li>定價與 scope control：點解 retainer 先係重點<\/li><\/ul>", "<ul><li>案例研究：你自己條生產線（附每週時間賬）<\/li><\/ul>", "<h2>2026-10 更新：中小企自建 AI 調查數據，同「流程代建＋維護」服務階梯<\/h2>", "<p>Pax8 喺 2026 年第三季做咗一份中小企 AI 調查（美、英、德、瑞典共 1,150 名決策者）：喺已經用緊 AI 嘅受訪企業入面，<a href=\"https://thenextweb.com/news/shadow-ai-small-businesses-pax8-survey\" target=\"_blank\">67% 話至少有一項自建 AI 方案已經常態使用<\/a>，19% 試作緊；52% 嘅自建者搭緊連接唔同系統嘅自動化流程，46% 建構或者測試緊可以執行多步任務嘅 AI agent。同一份調查都揭露自建嘅後遺症：35% 過去半年發現未經批准嘅「影子 AI」，49% 話 AI 帳單高過預期。（注意：呢啲係調查受訪者比例，唔係市場普查。）<\/p>", "<p>點解呢份調查對你好重要：中小企唔再滿足於「買件 AI 工具返嚟」，佢哋想要嘅係夾埋自己日常流程嘅成品，但自建之後就出現治理缺口、成本失控——呢個缺口正正就係「流程代建＋維護」服務嘅定位。你唔需要發明新技術，你需要嘅係將現成工具（Make、n8n、Zapier、模型 API）砌成解決一個具體重複工序嘅成品，然後用月費維持佢。<\/p>", "<h3>實戰：由零到第一單流程代建生意（90 日內跟得住做）<\/h3>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1 週：揀一個你真係有把握嘅流程類型——例如電郵自動分類回覆、報價單生成、私訊自動應答、到貨通知。寫低呢個流程而家人手點做、每星期食咗幾多分鐘。你嘅自動生產線經驗就係你嘅入場券。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 2 週：用現成工具整一個運作中嘅 demo，影一條 3 分鐘前後對比片。切記：唔好賣技術字眼，賣「由每週 5 個鐘變 20 分鐘」。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 3-4 週：揾 5-10 個目標客（自己識嘅中小企最方便：食肆、零售、網店、代購）。免費做一個 15 分鐘「流程體檢」：坐低睇佢哋做嘢，影低三個最重複、最貴嘅工序，出一頁紙報告。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">第 2 個月：揀其中 1-2 個做收費試點，明碼實價（參考：單一流程試點價 HK$1,500-3,000，包 30 日保用）。試點目的係攞 case study 同推薦，唔係賺大錢。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">5<\/span><span class=\"num-text\">試點完結：攞實數寫 case study（慳咗幾多小時、錯誤率跌咗幾多），問客攞一句推薦語。呢頁紙係你之後全部銷售嘅彈藥。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">6<\/span><span class=\"num-text\">轉月費：每個流程收 HK$500-1,500／月維護費（監控、改 prompt、API 升級跟進、月報）。一次過項目係辛苦錢，月費先係呢行嘅重點——對應返 Pax8 講嘅「帳單超預期」：你幫客設用量上限同月報，本身就係賣點。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">7<\/span><span class=\"num-text\">報價單必列四樣嘢：邊個位需要人工覆核、資料權限去到邊、用量成本上限、出事幾多小時內回應（SLA）。寫得越清楚，糾紛越少，續約率越高。<\/span><\/div>", "<p>誠實提醒：67% 係調查比例，唔代表你去到就一定有單。呢盤生意嘅成敗在於交付能力同信任，唔在於市場有幾熱。你嘅優勢係你有真實自動化生產線可以示範。<\/p>", "<h2>基建警示：GPU 出租係營運生意，唔係被動收租<\/h2>", "<p>好多「AI 賺錢清單」將出租 GPU 列作被動收入。真實公式係：淨回報 ＝ 使用率 × 實際成交時價 − 電費 − 平台佣金 − 維護時間成本。<a href=\"https://vast.ai/hosting\" target=\"_blank\">Vast.ai 嘅託管頁<\/a>有實際成交數據可以睇；2026 年 10 月 Cyprus Mail 一篇（贊助內容）亦提及呢條路，但入面嘅時薪數字係示意，唔係實測。呢條路唔係唔得，但佢係一盤要管理的營運生意。<\/p>", "<h3>如果你真係想試 GPU 出租，跟呢六步<\/h3>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第一原則：唔好為咗出租而買新卡去賭。先用你閒置緊嘅卡試 30 日。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">上 Vast.ai 查同型號嘅實際成交價同歷史使用率，唔好用佢個計算器嘅最理想數做預算。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">計真數：每卡每月淨回報 ＝ 出租時數 × 時價 − 電費（港幣每度計）− 涼費網費 − 佣金。寫落 spreadsheet。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">設止蝕線：連續兩個月淨回報低過「電費＋5% 折舊」，就收手放售張卡，唔好講理由藉口俾自己。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">5<\/span><span class=\"num-text\">記帳：出租時數、實收、維護時間逐月記，唔好淨靠平台 dashboard——你嘅時間都係成本。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">6<\/span><span class=\"num-text\">留意需求週期：AI 熱潮同模型代際會大幅拉動使用率，呢盤生意嘅收入波動比大部分人想像中大。<\/span><\/div>", "<h2>實戰教材：點樣睇穿贊助內容同平台宣傳（用真例）<\/h2>", "<p>2026 年 10 月，<a href=\"https://cyprus-mail.com/2026/10/12/how-to-make-money-with-ai-in-2026-10-ways-to-join-the-ai-economy-from-infrastructure-to-tools/\" target=\"_blank\">Cyprus Mail 刊咗一篇《How to make money with AI in 2026》<\/a>，內容係「AI 賺錢十法」，文章本身標明 SPONSORED，入面嘅收入數字係示意，仲介紹咗平台自己嘅付費方案。呢類文章唔係一定錯，而係你消化任何「賺錢建議」之前，要做一次五步盡職審查：<\/p>", "<h3>五步過濾法（睇任何賺錢建議之前做一次）<\/h3>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">搵出邊個付錢：掃一次「Sponsored」「Partner Content」「廣告」「PR」字眼。有呢啲標記，成篇文嘅立場就要打個折。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">分清「示例數字」同「實測收入」：見到 illustrative、for example、results may vary，即係話嗰啲數同你會賺到嘅嘢無必然關係。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">查作者利益：文中推薦嘅工具係咪作者自己間公司、有冇 affiliate link（hover 一吓啲 link 睇 domain）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">查提款條款：獎勵計劃嘅入帳係可提取現金，定係平台 credit？合約有冇退出限制？呢步係最多人蝕嘅位。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">5<\/span><span class=\"num-text\">搵至少一個獨立來源（非贊助、非 affiliate）講同一條財路先信。搵唔到，就當佢係廣告。<\/span><\/div>", "<h3>誠實提醒（2026-10-15 加入）：工作先被 AI 改變，機會未必即刻均等<\/h3>", "<p>《BusinessDay》2026 年 10 月 15 日嘅評論提出一個值得寫低嘅觀點：AI 改變工作嘅速度，快過佢創造出嚟嘅新機會，而且改變同機會嘅分配未必均等——文章以女性工作做切入，指出轉型紅利唔會自動落到每個人手上。套落副業場景：「AI 幫你慳時間」係真嘅，但慳到嘅時間會唔會變成收入，仲要睇你揸唔揸到客、定唔定到價、守唔守到品質。所以本章不斷叫你驗證：工作被改寫係事實，機會均等只係假設。<\/p>", "<ul><li>來源：<a href=\"https://businessday.ng/opinion/article/what-happens-when-ai-changes-womens-work-before-it-creates-opportunities-for-women/\" target=\"_blank\">BusinessDay — What happens when AI changes women&#x27;s work before it creates opportunities for women?（2026-10-15）<\/a><\/li><\/ul>"]}, {"lab": "第二章", "name": "一人公司與數碼產品", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第二章<\/div><div class=\"ch-title\">一人公司與數碼產品<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>利潤率 70-95% 嘅來源係零邊際成本：PDF、課程、模板賣一千份同賣一份嘅製作成本一樣。創作者經濟規模已達 US$2,500 億級，但關鍵唔係「賣咩」，而係「你嘅受眾信你嘅咩」。數碼產品嘅正確結構係一道階梯：<\/p>", "<ul><li>免費內容（博客、短影音）—— 引流同建立信任<\/li><\/ul>", "<ul><li>低價 micro-product（US$9-29）—— 鑑別清單、模板、小指南，第一次成交用<\/li><\/ul>", "<ul><li>中價產品（US$49-99）—— 完整手冊，例如當時物鑑別指南<\/li><\/ul>", "<ul><li>高價產品（US$200+）—— 課程、一對一諮詢、付費社群<\/li><\/ul>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>數碼產品世界嘅五個關鍵詞：<\/p>", "<ul><li>邊際成本：賣多一件嘅額外成本。數碼產品接近零，所以先有 70-95% 呢個利潤率——唔係因為你叻，係因為個本質。<\/li><\/ul>", "<ul><li>產品階梯：平價模板（百零蚊）→ 中價小課程 → 高價指導。同一批買家逐層升級，唔使每次由零搵新客。<\/li><\/ul>", "<ul><li>受眾先行：先有人信你，先有得賣。「整好先搵客」係呢行最常見嘅死法。<\/li><\/ul>", "<ul><li>一次性 vs 訂閱：買斷式收入一嚟一筆；訂閱式令收入可以預測，方便你計劃下個月。<\/li><\/ul>", "<ul><li>驗證：未出貨先收錢（預售、意向調查）係最平嘅試錯方法。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>成個生意係一條漏斗：免費內容（短影音、blog）→ 免費小禮物（換 email）→ 付費產品 → 老客升級。每落一層人數會少，但信任會深，願意俾嘅錢會多。<\/p>", "<p>一人公司之所以做得住，係因為你整產品一次、賣無限次。你嘅時間只應該花喺更新同回覆客戶，唔係逐件交貨——一旦變成逐件交貨，你就只係做返線性收入。<\/p>", "<p>定價心理：HK$49 同 HK$99 對買家嚟講往往係同一個「俾唔俾」嘅決定，但對你嘅收入係差一倍。定價唔好由成本出發，由「幫到對方幾多」出發。<\/p>", "<h2>香港視角與你的切入<\/h2>", "<p>你嘅知識資產好具體：昭和玩具鑑別、日本收購行情、回流文化、跨境定價。第一件產品建議係《クローバーガンダム當時物鑑別指南》（日＋繁中＋英三語版）：40-60 頁 PDF，內容包括真品特徵、翻新 vs 原裝、市場價格帶、收購渠道。呢個題目你日日都喺度用，唔使另搵題材。<\/p>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>假設你整咗一份「玩具店三語商品文案模板」，定價 HK$150。兩個月賣出 40 份＝HK$6,000，成本係你整嗰兩晚。之後同一份模板加啲教學片，變成 HK$490 嘅小課程，再賣 15 個人＝HK$7,350。<\/p>", "<p>同一批買家，就係你日後高價指導服務嘅潛在客。重點唔係呢啲數字，係「同一批受眾可以賺三次」嘅階梯結構。<\/p>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1-2 週：揀一個你最常被問嘅問題做主題，列大綱（我幫你起稿，你補實物照片同鑑別細節）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 3-6 週：每週寫一章，日文版先行（你嘅日文受眾對深度內容付費意願高）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 7-8 週：預售測試 —— IG 同日文博客出預售貼，早鳥價，講明 30 人訂先出版。呢步係真金白銀嘅市場驗證。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">第 9-12 週：達標就出版，用短影音引流（片尾一句帶產品 link）；唔達標就公開退款，轉下一個題目。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>閉門造車三個月先出街：第一個版本應該一星期內交到人手上，有人買先好擴充。<\/li><\/ul>", "<ul><li>追完美設計：買家買嘅係「慳到嘅時間」，唔係你個封面有幾靚。<\/li><\/ul>", "<ul><li>唔收集聯絡方法：平台接觸受眾嘅權限隨時收窄；email 名單先係你自己嘅。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>「製作一次、永久銷售」係真，但「唔使推廣」係假 —— 產品生命週期要靠內容泵水。<\/li><\/ul>", "<ul><li>預售先行，唔好閉門寫三個月先問市場。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>設計產品之前答呢三條：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你嘅受眾最常問你嘅係乜嘢問題？最常見嘅問題＝最好賣嘅產品方向。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">你可以喺一星期內出嘅最簡版本係乜嘢？<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">買咗呢件嘅人，下一步自然會想買你乜嘢？呢條答案決定你條階梯點畫。<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>數碼產品階梯模型 / 由 IG 留言搵產品題目 / 預售驗證法 / 一個內容三個市場嘅多語出版流程<\/li><\/ul>", "<h2>案例研究：AbMaxx —— 零經驗一人 app，6 個月做到月入 5 萬美元級<\/h2>", "<p>主角 Lino（X／IG：@LinoLeighton）6 個月前仲未寫過任何 app。佢喺 X（Twitter）上加入 app 開發社群，邊學邊整，整出 AbMaxx —— 一個「影相影腹肌，AI 即時分析你嘅腹肌狀態，再生成個人化訓練計劃」嘅健身 app。由零開始，第一個 app 就做到月入 5 萬美元級（訪談入面以「Zero→$10K／month」「$10K→$60K／month」分段講解個增長過程）。<\/p>", "<p>來源：<a href=\"https://apps.apple.com/ye/app/abmaxx-become-shredded/id6757769125\" target=\"_blank\">AbMaxx on App Store<\/a>｜Yahoo Finance 轉載 Starter Story 影片訪談「This unbelievable app idea makes $50K/month」（owner 2026-10-06 提供截圖）<\/p>", "<h3>關鍵做法（對應本章數碼產品階梯）<\/h3>", "<ul><li>唔識寫 code 都可以出貨：佢嘅生產方式係「社群學習＋現成 AI 工具」，6 個月由零到出 app —— 印證第一章「AI 工具令一人公司成為主流」：入場門檻係想法同執行力，唔係技術背景<\/li><\/ul>", "<ul><li>賣嘅係結果，唔係功能：「AI 掃描腹肌」聽落係 gimmick，但佢打包咗一個完整承諾 —— 影一張相，話你知你腹肌弱喺邊，俾個計劃你照做。呢個正係數碼產品階梯入面「解決一個具體問題」嘅低摩擦設計<\/li><\/ul>", "<ul><li>訂閱制收入：健身 app 屬訂閱型數碼產品 —— 與「製作一次、永久銷售」嘅 PDF 指南同一邏輯：內容前期製作、之後邊際成本接近零<\/li><\/ul>", "<ul><li>增長分段目標：佢將旅程拆做「0→10K」同「10K→60K」兩個階段，每個階段用唔同策略 —— 呢個做法可以直接套用落你 90 日計劃嘅第 4 週／第 8 週里程碑<\/li><\/ul>", "<h3>對你嘅啟示（三語＋玩具知識嘅獨有位）<\/h3>", "<ul><li>AbMaxx 用「影相＋AI 分析」賣結果；你嘅對應位係「玩具相＋AI 鑑別」—— 收藏家最痛嘅問題係「呢件係唔係當時物／翻新貨」，一個影相評估嘅工具或指南正正踩喺同一個需求邏輯<\/li><\/ul>", "<ul><li>佢嘅 playbook：由社群搵 idea（iOS App Ideas Database）→ 快速起貨 → 分段增長。你嘅 idea 來源應該係日日被問嘅鑑別問題（第二章行動計劃第 1 步已經寫咗）<\/li><\/ul>", "<h3>誠實提醒<\/h3>", "<ul><li>呢條片同類內容通常係 Starter Story 模式 —— 主角有付費 playbook／課程喺背後，訪談本身有宣傳成分；片尾免責聲明都講明「個案係教育用途，唔保證任何收入，每個生意情況都唔同」<\/li><\/ul>", "<ul><li>月入 5 萬美元係極少數成功案例，倖存者偏差好大；寫入 e-book 時要同「AI faceless 頻道」一樣咁處理：當「上限參考」，唔當「平均結果」<\/li><\/ul>", "<ul><li>AbMaxx 嘅可複製部分唔係佢嘅收入數字，而係佢嘅流程：社群搵 idea、AI 工具快速起貨、訂閱收費、分段增長 —— 呢個先係讀者應該帶走嘅嘢<\/li><\/ul>", "<h2>工具箱：賣數碼產品嘅三種「後台」—— Kajabi、Whop、Passes<\/h2>", "<p>2026 年 7 月一份行業分析指出，創作者賣知識產品嘅錢，大部分經三個「後台」走：Kajabi（賣課程／coaching 嘅一體化平台）、Whop（賣社群／軟件／訂閱嘅市集＋支付層）、Passes（明星級 direct-to-fan）。三個代表三種商業模式，揀邊個取決於你賣乜、去到幾大規模。<\/p>", "<ul><li>Kajabi：月費 US$179-399，零抽佣。平台官方數據話六位數收入嘅創作者平均只有 1,000-10,000 個追蹤者、約 4,000 人 email 名單、309 個付費客——即係話，賣知識產品根本唔需要網紅級流量，需要嘅係一個買你嘅小眾。<\/li><\/ul>", "<ul><li>Whop：累積 GMV US$2.67B、混合抽佣約 5.5%，由 Discord 交易群、機器人到 AI 工具訂閱乜都賣得——「市集＋支付」模式，起步零月費，但收入越大抽佣越多。<\/li><\/ul>", "<ul><li>Passes：抽佣 10%＋US$0.30，主打付費直播、按分鐘收費通話、付費 DM——係名人級 direct-to-fan 場地，暫時同你距離較遠，知道個名就算。<\/li><\/ul>", "<ul><li>計法啟示：月費制（Kajabi）收入越大、相對越平；抽佣制（Whop）起步零成本但越大越貴。你嘅「玩具鑑別指南」呢類一次性知識產品，起步用 Gumroad／Whop 呢類抽佣制試水溫，有穩定銷量先考慮月費制搬家。<\/li><\/ul>", "<ul><li>誠實提醒：呢篇係 PR 行業分析（Everything-PR），數據來自平台自述同公司披露，未經獨立審計；揀平台前自己開個測試帳戶行一次完整交易，問清楚實際收費先好承諾。<\/li><\/ul>", "<ul><li>來源：<a href=\"https://everything-pr.com/where-creator-money-actually-routes-kajabi-whop-passes\" target=\"_blank\">Everything-PR — Where Creator Money Actually Routes: Kajabi, Whop, Passes (2026-07-09)<\/a><\/li><\/ul>", "<h2>工具箱補充（2026-10-14）：電郵送達率係名單變現嘅命脈<\/h2>", "<p>Flodesk 喺 2026 年 10 月 14 日宣佈推出 <a href=\"https://www.prnewswire.com/news-releases/flodesk-launches-its-deliverability-center-to-become-the-leading-platform-for-email-deliverability-302907159.html\" target=\"_blank\">Deliverability Center<\/a>，畀平台用家查看同改善電郵送達狀況。呢單新聞本身細，但佢提醒咗一個賣數碼產品嘅人最易忽略嘅事實：名單幾大都好，封郵件入唔到收件箱，收入就係零。送達率唔係 IT 問題，係收入問題。<\/p>", "<h3>送達率基本功（唔使畀錢都即刻做到）<\/h3>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">用自家 domain 發送（例如 newsletter@toycon49shop.com），永遠唔好用免費 email 做名單發送。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">設定 SPF、DKIM、DMARC 三條 DNS 記錄——大部分電郵平台嘅教學 15 分鐘內搞掂，三樣齊先唔會被當垃圾郵件。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">開雙重確認訂閱（double opt-in）：少少麻煩，但換嚟嘅係乾淨名單同更高開信率。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">每季清一次名單：刪走 6 個月完全無開啟嘅訂閱者。供養幽靈訂閱者會拉低你成個 domain 嘅送達評分。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">5<\/span><span class=\"num-text\">寄出之前用 mail-tester.com（免費）檢查評分，8 分以上先好出街。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">6<\/span><span class=\"num-text\">監察投訴率：維持低於 0.1%，一超標即刻減低發送密度，檢討內容。<\/span><\/div>", "<ul><li>對應返本章三種後台（Kajabi／Whop／Passes）：送達率工具係另一層嘅事。無論用邊個平台，名單匯出權一定要喺你自己手——平台係租客，名單先係你嘅資產。<\/li><\/ul>"]}, {"lab": "第三章", "name": "直播帶貨（Live Commerce）", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第三章<\/div><div class=\"ch-title\">直播帶貨（Live Commerce）<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>美國市場由 2022 年 US$200 億增至 2026 年預計 US$680 億，年複合增長約 36%；亞洲（中、日、韓、東南亞）更加成熟。直播帶貨嘅核心唔係「直播」，係「信任嘅即場變現」：主播出鏡嘅真實感＋限時限額嘅稀缺性。對收藏品市場仲有個隱藏價值 —— 直播本身係素材工廠：一場直播剪出嚟嘅 clips 可以餵飽成個月嘅短影音 pipeline。<\/p>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>直播帶貨嘅術語，其實得四個字要識：<\/p>", "<ul><li>GMV：場內成交總額。睇規模用，唔等於你袋到嘅錢。<\/li><\/ul>", "<ul><li>轉化率：睇緊直播嘅人有幾多 % 買嘢。收藏品直播轉化率通常低過日用品，但一單客單價可以高好多。<\/li><\/ul>", "<ul><li>留存時長：觀眾平均留幾耐。平台用佢決定推唔推你場直播俾更多人。<\/li><\/ul>", "<ul><li>Hook（開場鉤）：頭 30 秒講明「今晚會睇到乜」。冇 hook 就冇留存，冇留存就冇推薦。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>直播嘅錢其實有三層：場內即賣（最直接但初期最細）、素材（一場直播剪五至八條片，餵飽你條短影音生產線）、信任（固定觀眾變回頭客）。新直播主只計第一層，所以永遠覺得直播冇錢賺。<\/p>", "<p>收藏品特別啱直播，係因為買唔買嘅決定因素唔係價格，係「信唔信呢個店主識貨」。直播係建立呢種信任最平嘅方法——你唔使俾廣告費，平台幫你搵咗啱嘅人入嚟。<\/p>", "<p>每件貨嘅講古公式：呢件係乜（背景 30 秒）→ 點解呢件特別（鑑賞位）→ 想睇實物去邊（連結）。三段式令外行人都聽得明，令內行人覺得你有料。<\/p>", "<h2>香港視角<\/h2>", "<p>香港本地直播帶貨規模細，但收藏品「講古＋鑑價＋放售」式直播喺 IG/FB 已經有成功例子（你嘅每月同樂會直播正正係呢個模式）。真正嘅稀有位係跨境：一個香港店主用流利日語直播講昭和玩具，對日本收藏家嚟講係少有嘅內容。<\/p>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>每個月一場、每場 20 個固定觀眾，暫時零成交係好正常嘅事。但每場剪 5 條片出短影音管道，等於每個月平白多咗 5 條內容；而嗰 20 個固定觀眾入面，三個月後有兩個變成認真查詢嘅回頭客，嗰兩單查詢帶嚟嘅生意，隨時大過一場直播嘅即場銷售。<\/p>", "<p>重點：直播係內容農場同信任機器，唔係收銀機。用呢個角度度 ROI，你先唔會第一個月就放棄。<\/p>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1-2 週：定死檔期 —— 每月第一個星期六晚 9pm「昭和玩具開箱講古」；設計流程：開場 hook → 三件主角玩具 → 互動 Q&amp;A → 下期預告。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 3-4 週：第一次試播，純講內容唔硬銷，儲節奏感同固定觀眾。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 5-8 週：第二次直播加入限時折扣碼（只喺直播期間有效），測轉化率。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">第 9-12 週：剪 5-8 條 clips 落短影音 pipeline；對比直播前後 toycon49 嘅流量同查詢數。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>以為開台就有人嚟：冇固定檔期、冇提前預告，平台同觀眾都唔會幫你。<\/li><\/ul>", "<ul><li>全程硬銷：收藏品觀眾係嚟聽故事嘅，唔係嚟格價嘅。一開口推銷，佢哋就走。<\/li><\/ul>", "<ul><li>播完就算：直播唔剪片，素材等於零，嗰兩個鐘先係真嘅浪費。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>直播收入初期極可能係零；佢嘅價值在素材產出同社群建立，用呢兩個 KPI 量度，唔好用單場銷售額。<\/li><\/ul>", "<ul><li>玩具屬「慢熱信任」品類，直播 4-6 個月先見到穩定轉化係正常。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>第一場直播之前答呢三條：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你嘅固定檔期係每月幾多號、幾多點？（答唔出即係未開始）<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">頭 30 秒你會講乜，令一個素未謀面嘅觀眾唔撳走？<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">播完之後 48 小時內，你會剪幾多條片、出邊幾個平台？<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>直播帶貨全球數據解讀 / 收藏品直播嘅港日雙市場玩法 / 一場直播嘅完整 SOP / clips 再利用系統<\/li><\/ul>"]}, {"lab": "第四章", "name": "短影音主導流量", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第四章<\/div><div class=\"ch-title\">短影音主導流量<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>2026 年演算法全面轉向完播率：頭 2 秒留唔住人就冇之後。內容策略因此由「單條爆款賭運氣」轉向「系列化＋穩定更新」—— 因為系列帶動追更、訂閱同意回訪，全部係演算法獎勵嘅訊號。呢個趨勢對一般人嘅意義：唔需要天份，需要 cadence（穩定節奏）。<\/p>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>短影音嘅四個核心詞，識佢哋先睇得明後台數據：<\/p>", "<ul><li>完播率：睇到最後嘅人嘅比例。2026 年演算法嘅頭號指標。<\/li><\/ul>", "<ul><li>Retention 曲線：後台嗰條「每一秒仲有幾多人喺度」嘅線。跌得最急嘅位，就係你要改嘅位。<\/li><\/ul>", "<ul><li>Hook：頭 2 秒。唔係「大家好」，係拋出一個具體到唔可以唔知結局嘅餌。<\/li><\/ul>", "<ul><li>系列化：同一個名加集數（#昭和玩具物語 第12彈），令觀眾同演算法都學識「呢條片之後仲有」。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>完播率點解咁重要：平台嘅商業目標係令人留喺 app 度，所以佢將「令人留到最後嘅片」推俾更多人。你嘅目標唔係呃完播（拖長廢話只會令真完播更少），係令內容密到觀眾唔捨得撳走。<\/p>", "<p>40 秒點解係甜蜜點：夠短，完播率容易企得高；夠長，講古有肉。再長，完播率跌得快過內容增值。<\/p>", "<p>字幕矩陣嘅邏輯：日文旁白＋繁中英字幕令同一條片同時服務三個市場；字幕放底部，係因為中途遮住件貨會趕客。<\/p>", "<p>一條片只講一個重點：資訊密度太高，觀眾消化唔到反而提早撳走。寧可分兩條片。<\/p>", "<h2>你的現狀（重要）<\/h2>", "<p>你唔係由零開始：你已經有一條 40 秒模板（底部字幕、Ken Burns 鏡頭、日文旁白＋繁中英字幕）同星期一／四嘅自動生產線。呢章嘅行動計劃唔係「開始做」，係「將現有系統推上一級」。<\/p>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>同一條 40 秒片，開場由「呢個係好舊嘅高達」改成「1979 年，日本小學生想買呢個但買唔起」——後者嘅保留率可以明顯高過前者。呢個唔係創意高低嘅問題，係「頭 2 秒俾咗幾多資訊俾觀眾」嘅問題。<\/p>", "<p>（呢類對比數字純屬示範；你自己嘅實際 retention 曲線，以 IG／YouTube 後台為準。）<\/p>", "<h2>RPM 差異：同一個觀看數，收入可以差十倍<\/h2>", "<p>好多創作者以為「多啲觀看＝多啲錢」，但實際決定廣告收入嘅唔係觀看數，係 RPM（每千次觀睇嘅實收）。同一條片，觀眾喺美國定香港、題材係財經定娛樂，RPM 可以差成十倍。呢個係 2026 年短影音經營最被低估嘅一個變數。<\/p>", "<ul><li>觀眾所在地：美國觀眾嘅廣告單價長期最高；日本同香港市場低一截。同一條片用英文旁白或者英文字幕行先，接觸到嘅高價值觀眾即刻唔同。<\/li><\/ul>", "<ul><li>題材廣告價值：財經、科技、商業呢類「廣告主肯俾錢」嘅題材 RPM 明顯高過純娛樂。你嘅玩具內容可以搭埋「收藏品投資」「日本中古市場」呢類商業角度，令條片唔止係娛樂。<\/li><\/ul>", "<ul><li>實際做法：同一條 40 秒片，日文旁白＋繁中英字幕嘅字幕矩陣已經係為多市場而設；想食高 RPM，可以揀部分集數轉做英文旁白主打美國觀眾，同一內容賺高一截嘅廣告單價。<\/li><\/ul>", "<p>行情參考：行業估算工具列出 2026 年 YouTube RPM 範圍，但嗰啲係估算唔係承諾——你自己頻道嘅實際 RPM，以 YouTube Studio 後台為準。<\/p>", "<ul><li>來源：<a href=\"https://influencermarketinghub.com/how-much-do-youtubers-make/\" target=\"_blank\">Influencer Marketing Hub — How Much do YouTubers Make in 2026?<\/a><\/li><\/ul>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1-4 週：照現有節奏出片，加上固定系列名同集數（例如「#昭和玩具物語 第12彈」），令觀眾有追更理由。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 5-8 週：逐條分析 retention（IG/YouTube 後台），搵出保留率最高嘅開場句式，寫入生產模板。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 9-12 週：揀表現最好嘅 2-3 條落小額推廣（HK$300-500/條試推），睇 CPM 同粉絲轉化，決定推廣係咪值得放大。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>開場 10 秒先入正題：2026 年嘅觀眾唔會等你。<\/li><\/ul>", "<ul><li>條條片唔同主題：演算法學唔到你係「咩頻道」，推薦就散晒。<\/li><\/ul>", "<ul><li>只睇 like 數：完播率、回訪、分享先係推薦嘅真正訊號；like 係最無關痛癢嗰個。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>「AI faceless 頻道月入過萬」多數係賣課者嘅故事；YouTube 已收緊模板化 AI 內容嘅變現審核。你嘅優勢係真貨、真故事、真店主 —— 千祈唔好學 faceless 玩法。<\/li><\/ul>", "<ul><li>完播率係相對指標：對手係同一流量池嘅其他片，唔係絕對百分比。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>出下一條片之前答呢三條：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你最近五條片嘅頭 2 秒各自講咗乜？寫晒出嚟，唔夠具體嘅嗰啲就係要改嘅位。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">你嘅系列名叫乜、去到第幾彈？<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">Retention 跌得最急嗰一秒，畫面同字幕當時發生緊乜事？<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>完播率演算法拆解 / 系列化點解赢過爆款 / 一條片三個市場嘅字幕矩陣 / 小額推廣測試法<\/li><\/ul>"]}, {"lab": "第五章", "name": "收藏品與中古轉售", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第五章<\/div><div class=\"ch-title\">收藏品與中古轉售<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>全球玩具市場 2026 年估計突破 US$1,380 億；限量版同 vintage 轉售係 reseller 最賺品類之一，原因係供應只會遞減（損耗、入櫃收藏）而需求跨代（懷舊復刻潮不斷製造新買家）。香港二手文化活躍，Carousell 係主陣地，港人買二手動機係慳錢同環保並重。<\/p>", "<p>你嘅獨特位係「日本回流」：香港倉庫裡嘅日本當時物，對日本買家嚟講係「流出海外又返嚟」嘅浪漫。日本二手市場對品相描述同來源透明度要求極高 —— 呢樣對你係好事，因為誠實嘅描述就係你嘅溢價來源。<\/p>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>玩轉售要嘅四個詞，全部同錢直接有關：<\/p>", "<ul><li>當時物：出品年代嘅原版貨（相對於後來嘅復刻版）。呢個係收藏市場嘅「真」字指標。<\/li><\/ul>", "<ul><li>狀態評級（Grading）：盒損、色移、配件齊缺。同一件貨，差一級狀態，價錢可以差幾倍。<\/li><\/ul>", "<ul><li>來源（Provenance）：件貨由邊度嚟、之前邊個擁有。有故事嘅貨，溢價可以好誇張。<\/li><\/ul>", "<ul><li>平台費：Yahoo Auctions／Mercari 每單抽嘅百分比，連埋收款同運輸成本一齊計，先係真成本。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>一單 flip 嘅完整盤數：入貨價＋運費＋平台費＋收款成本＋你嘅時間 → 賣出價。漏計任何一項，帳面賺、實際蝕。好多人輸係輸喺呢度，唔係輸眼光。<\/p>", "<p>點解識貨嘅人賺得多過錢多嘅人：呢個市場嘅資訊差唔係「知唔知有呢件嘢賣」，係「知唔知呢件嘅稀有程度同合理價」。你嘅玩具知識就係資本，錢反而係配角。<\/p>", "<p>慢係呢個市場嘅特徵，唔係缺點：收藏品周轉慢，所以要用閒置資金同「唔急賣」嘅策略去玩。急用錢嘅人喺呢個市場輸硬。<\/p>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>入貨 HK$300（連運費），Mercari 賣 6,000 円；平台費連國際收款大約一成，實收折返約 HK$390，淨賺約 HK$90——而你用咗兩個星期同兩個鐘頭嘅執貨影相包裝時間。<\/p>", "<p>同一單，如果你識貨所以執到 HK$150 入貨，淨賺即刻變 HK$240。呢個例子話你知：利潤係喺「入貨嗰一刻」賺返嚟嘅，唔係賣嗰一刻。（數字純屬示範。）<\/p>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1-2 週：由貨品目錄揀 10 件最適合日本市場嘅貨（品牌認知高＋品相好＋方便郵寄）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第 3-4 週：聯絡 2-3 間出品代行（出品代行サービス）比較報價：佣金、上架費、攝影要求、結帳方式（呢步我可以幫你做研究）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 5-8 週：先出 2-3 件測試：每件影多角度相、寫詳細日文品相描述（我可以生成初稿）。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">第 9-12 週：同步喺 eBay 掛 5 件攻歐美日系收藏者；比較兩個平台嘅成交價、速度同糾紛率。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>見到「升值故事」就追高入貨：收藏市場嘅消息傳到去你把口嗰陣，價已經升咗一輪。<\/li><\/ul>", "<ul><li>未計平台費同運費就覺得自己賺咗。<\/li><\/ul>", "<ul><li>同一時間持貨太多：現金流一斷，賤價斬倉嘅只會係你自己。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>跨境轉售收益波動大，唔好當固定月薪式回報去規劃現金流。<\/li><\/ul>", "<ul><li>日本買家對品相描述極認真，描述誠實係唯一可持續策略；一次差評喺日本市場殺傷力好大。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>落下一單之前答呢三條：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你最熟嘅三個系列，現價同一年前差幾多？答唔出＝功課未夠。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">你每單 flip 有冇記低：成本、費用、時間？冇記錄，你永遠唔知自己真係賺定蝕。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">你手上嘅貨，有幾多 % 你願意揸超過一年？呢個比例決定你抗跌嘅能力。<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>全球 resale 數據與品類分析 / 回流概念同定價心理 / 出品代行實戰比較 / 品相描述與信任建立<\/li><\/ul>", "<h2>案例研究：QuickFlips —— 二手電玩副業變正職<\/h2>", "<p>31歲 Caleb Ashton（美國肯塔基州）2019年用500美元（約港幣3,900元）創業，原意只係幫補家計，自學二手電玩轉售技巧（教科書、Figure公仔、高爾夫球桿都試過，最後專注電玩）。2024年創立網上平台 QuickFlips，用家輸入商品名即時獲報價、寄貨驗收後24小時內收款,翻新後上架 Amazon／eBay 轉售，2025年起開設實體門市。2026年上半年營業額已錄得約400萬美元（約港幣3,120萬元），員工33人，自成立以來收購總額超過500萬美元（約港幣3,900萬元）。<\/p>", "<p>來源：<a href=\"https://finance.yahoo.com/small-business/articles/turned-side-hustle-video-game-091901037.html\" target=\"_blank\">Yahoo Finance／Business Insider 報道<\/a>｜Instagram <a href=\"https://www.instagram.com/businessfocus.startup/\" target=\"_blank\">@businessfocus.startup<\/a> 轉載（owner 2026-10-06 提供截圖）<\/p>", "<h3>關鍵做法（直接對應本章策略）<\/h3>", "<ul><li>「高報價、快速賣」策略：只要商品狀況符合標準即網站顯價、即付款，唔等貨到先壓價 —— 用資金快速流轉代替逐件追最高利潤<\/li><\/ul>", "<ul><li>自建即時報價系統：用家輸入商品名即獲收購價，大幅降低決策摩擦 —— 呢個係你做出品代行／日本回流轉售時可以參考嘅使用者體驗<\/li><\/ul>", "<ul><li>多平台轉售圖利：翻新貨同時上架 Amazon、eBay 等多個平台，分散單一平台風險<\/li><\/ul>", "<ul><li>內容反哺生意：YouTube／IG／Facebook 累積 66 萬 followers，分享創業歷程同鑑別心得，同時帶動品牌＋流量＋廣告收益 —— 正正係第六章「內容變現多元化」嗰套疊加邏輯嘅實證<\/li><\/ul>", "<ul><li>實體遊戲嘅反週期邏輯：Caleb 認為數碼版遊戲因伺服器關閉而無法玩，反而令玩家重新投入實體收藏 —— 同昭和玩具「當時物保值」嘅邏輯相通<\/li><\/ul>", "<h3>對你本 e-book 嘅啟示<\/h3>", "<ul><li>呢個故事證明「收藏品轉售」可以由副業做到正職規模，但起步同你一樣細（$500 對比你現有嘅 toycon49 貨源同三語能力，你嘅起點其實更強）<\/li><\/ul>", "<ul><li>「高報價快速賣」嘅即時報價思維，可以用喺你同出品代行議價、或者將來自己開發收購流程時參考<\/li><\/ul>", "<ul><li>建議收納位置：第五章「深入分析」之後，作為「副業到正職」嘅真實佐證；亦可以在前言或行銷文案引用做激勵故事（引用時用繁中譯名，標明美國案例，唔好暗示係香港本地數據）<\/li><\/ul>"]}, {"lab": "第六章", "name": "內容變現多元化", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第六章<\/div><div class=\"ch-title\">內容變現多元化<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>深入分析<\/h2>", "<p>頂級創作者嘅結構好一致：平台廣告收入佔比通常少過兩成，真正嘅收入嚟自疊加：聯盟行銷、贊助、自家產品、會員訂閱。多元化嘅意義唔止「賺多啲」，係抗脆弱 —— 任何平台改演算法、改分潤，都殺唔死你。呢一章係前五章嘅總裝。<\/p>", "<h2>概念速覽（睇明呢章嘅關鍵詞）<\/h2>", "<p>內容變現嘅四個錢字，認清邊個係你實收：<\/p>", "<ul><li>CPM／RPM：一千次觀睇嘅廣告收入；RPM 係你實收嗰個。市場同品類決定佢，唔係你努力程度。<\/li><\/ul>", "<ul><li>聯盟行銷（Affiliate）：人哋經你條 link 買嘢，你抽佣。呢個係內容嘅「後置收入」，最常被低估。<\/li><\/ul>", "<ul><li>贊助（Sponsorship）：品牌俾錢你講佢嘅嘢。要有穩定觀眾先有得傾，而且通常係短期約。<\/li><\/ul>", "<ul><li>自家產品：所有變現方式入面，利潤最高、最有主權嘅一層。<\/li><\/ul>", "<h2>機制拆解：啲錢實際點流<\/h2>", "<p>多元化嘅正確次序：先將一個主要管道跑順（你嘅短影音），先加第二樣。同一時間開五條線，結果只會係樣樣半桶水，樣樣都唔夠數據做判斷。<\/p>", "<p>內容資產嘅複利：一條片同時係流量入口、信任建立、搜尋紀錄同產品示範。同一份功夫收幾次錢，先真正叫做「變現多元化」——唔係開多個帳號。<\/p>", "<p>管道結構：廣告同 affiliate 係被動底層，贊助係中層，自家產品係頂層。三層都有嘢，先唔怕單一平台改演算法令你歸零。<\/p>", "<h2>案例研究：X 嘅 ragebait 年入 US$80,000 — 平台分潤係雙刃劍<\/h2>", "<p>2026 年 9 月《Fortune》報道咗一個 X 上以爭議內容（ragebait）出名嘅創作者，聲稱靠平台分潤賺得約 US$80,000。呢個數字嘅意義唔係「你都去做啦」，而係佢清楚示範咗平台分潤嘅兩面：高互動內容真係可以直接變現，但條路嘅結構風險亦都寫晒喺個案入面。<\/p>", "<ul><li>平台分潤獎勵嘅係互動量，唔係內容價值：爭議內容互動天然高，所以喺純分潤制度下「有市場」。但同一個機制亦代表：平台一改分潤規則，呢類收入可以即刻歸零。<\/li><\/ul>", "<ul><li>單一個案唔等於可預期收入：US$80,000 係倖存者口徑，冇獨立核實；做同類內容而一蚊都賺唔到嘅人，唔會上《Fortune》。<\/li><\/ul>", "<ul><li>對你嘅啟示：你嘅收入結構而家係「toycon49 銷售＋內容引流」，即係自家產品行先——呢個正係 ragebait 模式冇嘅嘢。呢個案例應該令你更肯定：平台分潤當 bonus，唔當主力。<\/li><\/ul>", "<ul><li>來源：<a href=\"https://fortune.com/2026/09/13/x-creator-payouts-murray-hill-guy-ragebait/\" target=\"_blank\">Fortune — One of X&#x27;s most notorious ragebaiters explains how the outrage business earned him $80,000 (2026-09-13)<\/a><\/li><\/ul>", "<h2>案例研究：全職律師 Lucy Zheng 嘅 10 條收入管道 — 「賺錢」同「值得繼續做」係兩回事<\/h2>", "<p>2026 年 10 月《Business Insider》訪問咗美國全職律師 Lucy Zheng。佢由 2012 年一個近乎零成本嘅時裝 blog 開始，14 年間同丈夫累積咗 10 條收入管道。最值得記住嘅唔係佢賺幾多，而係佢親手結束咗一門年賺六位數嘅 Etsy planner 舖頭——理由係出貨、入貨、新設計太食時間。佢嘅原則：「有得賺，唔等於值得 scaled up」。<\/p>", "<ul><li>收入管道係「疊加」出嚟嘅：時裝 blog 教識佢網站同平面設計 → 用嚟做實體 wedding planner → 學識同海外廠商打交道 → 再變成地產招牌生意。每一步都食住之前嘅技能，同呢章講嘅「收入疊加模型」一模一樣。<\/li><\/ul>", "<ul><li>而家 5 條內容收入：品牌合作／UGC、聯盟行銷、數碼產品、平台分成、付費社群——總收入已追平佢嘅律師人工。注意個組合：廣告唔係最大嚿，自家產品同會員先係。<\/li><\/ul>", "<ul><li>佢親身示範「主動 vs 被動」嘅界線：佢自己講「我一停拍片，錢就會停」。所以長線佢投資租盤、建立唔使佢日日產出嘅付費社群同 newsletter——同本書嘅 70/20/10 分配係同一個思路。<\/li><\/ul>", "<ul><li>低成本起步法（UGC）：幫品牌拍片，唔需要自己有受眾——3-4 條樣片做 portfolio、一部手機＋約 US$25 器材、CapCut／IG Edits 免費剪輯，就開得工。<\/li><\/ul>", "<ul><li>對你嘅啟示：你 toycon49 pipeline 出嘅日文短片，正正可以攞嚟做 UGC portfolio——同一批片，一邊幫 toycon49 引流，一邊 pitch 日本玩具品牌同收藏平台。你嘅三語能力令呢個 portfolio 可以同時賣三個市場。<\/li><\/ul>", "<ul><li>誠實提醒：六位數 Etsy 營業額係單一個案、自述口徑，未經獨立核實；但「時間成本高過回報就砍」呢個決策邏輯，係任何規模都適用——包括你而家條 toycon49 pipeline，都要定期做同一條數。<\/li><\/ul>", "<ul><li>來源：<a href=\"https://www.businessinsider.com/serial-side-hustler-shares-how-to-start-making-money-today-2026-10\" target=\"_blank\">Business Insider — A full-time lawyer with 10 income streams shares her biggest flops, and the easiest way to earn side money in 2026 (2026-10-02)<\/a><\/li><\/ul>", "<h3>案例研究：跑步會變年收生意 — 免費社群係最平嘅需求驗證<\/h3>", "<p>Moneycontrol 喺 2026 年 10 月 12 日報道：有創辦人由一個免費跑步會（run club）開始，因為班友想玩多啲，順勢延伸出派對、遠足、滑雪等收費活動，媒體報道佢年營收約 6 crore 盧比（標題換算約 64 萬美元）。成條路徑好清晰：免費社群聚集同好 → 低成本活動測水溫 → 收費服務變現——呢個模式同「內容變現多元化」係同一個邏輯，只係佢嘅「內容」係活動體驗。<\/p>", "<p>點解得：社群本身已經做完需求驗證——班人肯免費嚟，即係需求真實存在；活動係低邊際成本產品，試一次派對收唔收得到錢，一晚就知。點解可能唔得：呢個係單一個案，6 crore 係媒體報道口徑，唔係審計數字；活動生意仲有場地、保險、天氣、安全責任呢啲內容創作冇嘅成本結構；同一個模式喺第個城市可能完全唔得，因為你嘅社群未必肯由免費跳去付費。<\/p>", "<p>如果照抄呢個模式去驗證，監住呢幾個數：出席率（報名嘅有幾多真係嚟）、每位客戶獲取成本、場地同保險支出、退款率，同埋最重要嘅——重複購買率。班友係咪肯一季再嚟多次？重複購買先證明佢哋買嘅係「服務」，唔係俾面你一次。開波用細場次細價位試，唔好一開波就租大場。<\/p>", "<ul><li>來源：<a href=\"https://www.moneycontrol.com/news/trends/man-starts-free-run-club-turns-it-into-rs-6-crore-a-year-business-through-social-events-14049472.html\" target=\"_blank\">Moneycontrol — Man starts free run club, turns it into Rs 6 crore-a-year business through social events（2026-10-12）<\/a><\/li><\/ul>", "<h2>你的收入疊加地圖（未來 12 個月）<\/h2>", "<ul><li>流量層：日文博客＋IG＋YouTube Shorts（已有）—— 餵所有其他層<\/li><\/ul>", "<ul><li>轉化層：toycon49 銷售（已有）＋直播帶貨（第三章）<\/li><\/ul>", "<ul><li>產品層：鑑別指南 PDF（第二章）—— 零庫存高毛利<\/li><\/ul>", "<ul><li>服務層：AI 自動化顧問（第一章）—— 主動收入對沖<\/li><\/ul>", "<ul><li>未來層：付費收藏家社群／訂閱（日本收藏家對深度內容有付費習慣，note／FANBOX 模式值得測試）<\/li><\/ul>", "<h2>模擬例子（數字純屬示範）<\/h2>", "<p>同一條 40 秒片：YouTube／IG 帶嚟少量廣告或分潤收入，片描述入面嘅連結每個月帶兩單查詢，日本市場嘅買家直接 DM 你問貨——三種錢由同一條片度嚟。<\/p>", "<p>所以「整多一條片」唔保證多一倍收入；「整一條用得多次嘅片」先係方向。（示意性描述，實際比例以你各平台數據為準。）<\/p>", "<h2>90 日行動計劃<\/h2>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">第 1 個月尾：整一張收入追蹤表，每條流記錄營業額同每週時間成本。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">每月尾：用 70/20/10 規則分配下月時間 —— 70% 落成績最好嘅流、20% 落第二、10% 試新嘢。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">第 3 個月尾：按數據決定邊條流「畢業」做重點，其餘降級為維護模式。本書每章嘅 90 日計劃，本質上係六條流嘅選拔賽。<\/span><\/div>", "<h2>新手最常見嘅錯誤<\/h2>", "<ul><li>遷就演算法多過遷就觀眾：演算法每年變，觀眾個口味冇咁易變。<\/li><\/ul>", "<ul><li>所有收入綁住一個平台：一改演算法即歸零；名單同自家產品先係你嘅保險。<\/li><\/ul>", "<ul><li>見到人哋做乜新變現就跳去做：注意力係你最貴嘅成本，亂試新嘢係最燒錢嘅玩法。<\/li><\/ul>", "<h2>誠實提醒<\/h2>", "<ul><li>多元化唔等於樣樣做一半 —— 係有數據支持先加一層。<\/li><\/ul>", "<ul><li>新收入流由「測試」到「值得長做」最少要 90 日，唔好用兩星期數據判死刑。<\/li><\/ul>", "<h3>快速自測（答得出先好開工）<\/h3>", "<p>規劃下一季之前答呢三條：<\/p>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">你而家有幾多種收入來源？邊一種如果聽日消失，你受唔受得起？<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">你最近 30 日嘅內容，有幾多 % 直接或者間接帶過錢落嚟？<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">有冇一個平台以外都搵得你嘅方法（email、名單、群組）？<\/span><\/div>", "<h2>E-book 章節大綱建議<\/h2>", "<ul><li>收入疊加模型 / 70-20-10 資源分配法 / 抗脆弱設計：平台風險點解同點算<\/li><\/ul>", "<h2>案例研究：AI 虛擬 KOL —— 訂閱＋品牌合作，但信任係最大關卡<\/h2>", "<p>2026 年 10 月，<a href=\"https://mashable.com/life/ai-influencers-business-creators-comedians\" target=\"_blank\">Mashable 報道咗 AI 虛擬創作者（AI-generated influencers）嘅商業化<\/a>：呢批完全由 AI 生成嘅角色，透過訂閱制同品牌合作變現，部分已經有實質收入。同一篇報道亦寫明佢哋嘅隱憂：市場迅速擠擁，而且「觀眾未必知呢個角色係 AI」嘅披露問題，直接影響品牌肯唔肯落預算。將佢同本章 X ragebait 嗰單案例擺埋一齊睇：平台分潤類收入嘅共通點係——同一個模式，爆嗰個賺晒，入場遲嘅人多數得個桔。<\/p>", "<h3>如果你想試 AI 虛擬角色路線，實戰六步<\/h3>", "<div class=\"num-li\"><span class=\"num-badge\">1<\/span><span class=\"num-text\">揀一個你真係有料嘅垂直領域做角色設定——你自己嘅例子：昭和玩具鑑賞。角色嘅內容要由真知識支撐，唔係淨靠 AI 靚相。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">2<\/span><span class=\"num-text\">第一日落場就定披露策略：bio 同影片簡介標明 AI 生成。喺歐美市場「知情權」已經係趨勢，隱瞞係公關炸彈，一爆就無。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">3<\/span><span class=\"num-text\">內容分工：AI 角色負責日常輕量內容，真人（你）保留深度內容同專業判斷——呢個分工正正係你嘅自動化生產線能夠做到嘅嘢。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">4<\/span><span class=\"num-text\">訂閱要產品化：唔好賣「同角色傾偈」（紅海），賣知識產品——例如「昭和玩具入手指南」「行情價目表」，同你嘅收藏專業直接掛鈎。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">5<\/span><span class=\"num-text\">接品牌合作之前，先問對方 PR 團隊可唔可以接受 AI 角色，先至報價；接受 AI 角色嘅品牌，先係你嘅長期客。<\/span><\/div>", "<div class=\"num-li\"><span class=\"num-badge\">6<\/span><span class=\"num-text\">量度真數：追蹤付費轉化率同續訂率，唔好睇 follower 數 vanity metric。<\/span><\/div>", "<p>誠實提醒：AI 虛擬創作者市場仍然好早期，披露共識未形成之前，品牌預算唔會重落呢度。建議當實驗性收入管道，佔你 10% 以內嘅時間（對應第七章 70/20/10 嘅 10% 實驗倉）。<\/p>"]}, {"lab": "第七章", "name": "90 日總排期表與回顧制度", "blocks": ["<div class=\"ch-head\"><div class=\"ch-num\">第七章<\/div><div class=\"ch-title\">90 日總排期表與回顧制度<\/div><div class=\"ch-rule\"><\/div><\/div>", "<h2>每週節奏<\/h2>", "<ul><li>星期一／四 9:00：內容生產線自動行（日文博客＋短影音腳本／成片）<\/li><\/ul>", "<ul><li>每日 9:00：今日搵錢快報（已啟用）—— 新案例直接摻入對應章節<\/li><\/ul>", "<ul><li>星期六晚 9pm（第 3 週起）：昭和玩具開箱講古直播<\/li><\/ul>", "<h2>里程碑<\/h2>", "<ul><li>第 4 週：AI 服務 case study 完成；直播試播完成；日本市場 10 件貨名單出爐<\/li><\/ul>", "<ul><li>第 8 週：AI 服務 pilot 完成收 testimonial；直播首次帶折扣碼；出品代行首 3 件上架<\/li><\/ul>", "<ul><li>第 12 週：鑑別指南預售結果出爐；eBay vs 日本平台數據對比；第一次 70/20/10 分配決策<\/li><\/ul>", "<h2>回顧制度<\/h2>", "<ul><li>每月尾 30 分鐘：填收入追蹤表，比較六條流嘅收入／時間比<\/li><\/ul>", "<ul><li>每 90 日：戰略回顧，決定下一個 90 日嘅 70/20/10 分配同「畢業」名單<\/li><\/ul>", "<ul><li>記錄原則：所有決定睇數據，唔睇感覺；贏家聚焦，唔平均用力<\/li><\/ul>", "<h2>70/20/10 點解咁分<\/h2>", "<p>70% 時間落喺「而家有錢賺」嘅嘢（現金流）；20% 起「遲啲有錢賺」嘅資產（內容、產品、名單）；10% 試「可能係下一波」嘅新位。呢個比例唔係教條，係防止兩個死法：全副身家押新嘢會餓死，永遠只做舊嘢會悶死——而兩樣嘢都殺人於無形。<\/p>", "<p>每個 90 日循環完結嗰陣，檢視 10% 嗰部分有冇任何訊號值得升級做 20%；同時睇下 20% 嗰啲資產，有冇嘢開始自己識行（例如舊片仲有流量、名單自動長大）。有，就將佢升班；冇，就照舊餵草。<\/p>", "<h2>幾時應該停做一個項目<\/h2>", "<ul><li>連續兩個循環都達唔到你定嘅最低訊號（觀眾數、查詢數、成交數）——唔係「差啲」，係根本冇反應。<\/li><\/ul>", "<ul><li>你每次做嗰樣嘢都拖到最後一刻先肯郁——你嘅興趣已經投票咗。<\/li><\/ul>", "<ul><li>佢同另一個項目爭用同一批時間，而另一個嘅訊號強好多。<\/li><\/ul>", "<p>停唔係失敗，係將 10% 嘅實驗時間讓俾下一個實驗。每季停一個、試一個，一年之後，你仲做緊嘅全部係有反應嘅嘢。呢個先係 90 日制度嘅真正意義：佢唔係時間表，係篩選機。<\/p>", "<h3>生態背景（2026-10-15 加入）：2026 年創業者嘅活動訊號<\/h3>", "<p>TechCrunch Disrupt 2026 第二日（10 月 14 日）議程照舊圍住 AI、投資人專場同圓桌討論轉。呢類活動議程係創業生態嘅溫度計：資金同注意力集中喺邊，下一年嘅新機會多數喺嗰度出現。但分清楚：活動報道唔係收入證據，去過會唔等於搵到錢。你嘅 90 日實驗先係主力，呢啲生態訊號只係幫你揀「下一季試咩」嘅參考。<\/p>", "<ul><li>來源：<a href=\"https://techcrunch.com/2026/10/14/techcrunch-disrupt-2026-day-2/\" target=\"_blank\">TechCrunch — Disrupt 2026: Day 2（2026-10-14）<\/a><\/li><\/ul>"]}]}</script>
+<script>
+window.addEventListener('error', function (ev) {
+  var l = document.getElementById('loading');
+  if (l && !window.__built) l.textContent = '載入異常：' + (ev.message || 'script error') + '（請重新開啟本頁）';
+});
+const DATA = JSON.parse(document.getElementById('book-data').textContent);
+document.getElementById('lver').textContent='v78.1 資料OK';
+const state = { sheets: [], TOTAL: 0, cur: 0, busy: false };
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildToc(entries) {
+  let rows = '';
+  entries.forEach(e => {
+    rows += `<div class="toc-row" data-page="${e.page}"><span class="toc-lab">${escapeHtml(e.lab)}</span><span class="toc-name">${escapeHtml(e.name)}</span><span class="toc-dots"></span><span class="toc-pn">${e.page}</span></div>`;
+  });
+  return `<div class="toc"><div class="toc-h">目　錄</div><div class="toc-rows">${rows}</div></div>`;
+}
+
+function chrome(i, inner, chapterLabel) {
+  if (inner.indexOf('coverimg') !== -1) return `<div class="page coverp">${inner}</div>`;
+  if (inner.indexOf('titlepage') !== -1) return `<div class="page plain">${inner}</div>`;
+  const headTxt = chapterLabel || '全球賺錢趨勢 2026';
+  return `<div class="page"><div class="pg-header">${headTxt}</div><div class="pg-body">${inner}</div><div class="pg-footer">${i+1}</div></div>`;
+}
+
+function fitsAll(probeBody, capH, arr) {
+  probeBody.innerHTML = arr.join('');
+  return probeBody.scrollHeight <= capH;
+}
+function paginate(probeBody, capH, blocksHtml) {
+  // Few reflows: binary-search how many blocks fit on each page (O(log n) layouts per page
+  // instead of one forced reflow per block).
+  const pages = [];
+  let i = 0;
+  const n = blocksHtml.length;
+  while (i < n) {
+    let lo = 1, hi = n - i;            // at least one block per page (avoids infinite loop)
+    // gallop upward first: pages hold ~5-15 blocks, so this ends fast
+    let step = 4;
+    while (lo < hi) {
+      const probe = Math.min(hi, lo + step);
+      if (fitsAll(probeBody, capH, blocksHtml.slice(i, i + probe))) { lo = probe; step *= 2; if (probe === hi) break; }
+      else { hi = probe - 1; break; }
+    }
+    // binary search between lo (fits) and hi (may not fit)
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      if (fitsAll(probeBody, capH, blocksHtml.slice(i, i + mid))) lo = mid; else hi = mid - 1;
+    }
+    pages.push(blocksHtml.slice(i, i + lo));
+    i += lo;
+  }
+  probeBody.innerHTML = '';
+  return pages;
+}
+
+function maybeAddOrnament(probeBody, capH, lastPageBlocks) {
+  // if the final page of a chapter is sparse, append an end-of-chapter ornament
+  // (only when it fits) so it reads as intentional, not as a rendering bug.
+  probeBody.innerHTML = lastPageBlocks.join('') + '<div class="end-orn">◆ ◆ ◆</div>';
+  const fits = probeBody.scrollHeight <= capH;
+  const fill = probeBody.scrollHeight / capH;
+  probeBody.innerHTML = '';
+  return (fits && fill < 0.6) ? '<div class="end-orn">◆ ◆ ◆</div>' : '';
+}
+
+function getStableViewportHeight() {
+  if (window.visualViewport && window.visualViewport.height) return Math.round(window.visualViewport.height);
+  return window.innerHeight;
+}
+
+async function build(keepCur) {
+  const stage = document.getElementById('stage');
+  const bw = Math.min(window.innerWidth, 480);
+  const vh = getStableViewportHeight();
+
+  // uniform font scale: ONE variable, everything derives from it
+  const fs = Math.round(Math.min(18, Math.max(14.5, bw * 0.0425)));
+  document.documentElement.style.setProperty('--fs', fs + 'px');
+
+  // measure hud first so #book is never flex-shrunk by it (v5 bug)
+  stage.innerHTML = '<div id="hud"><button id="prev">←</button><span id="pinfo"></span><button id="next">→</button></div>';
+  const hud = document.getElementById('hud');
+  const hudCs = getComputedStyle(hud);
+  const hudFootprint = hud.getBoundingClientRect().height + parseFloat(hudCs.marginTop || 0) + parseFloat(hudCs.marginBottom || 0);
+  const bh = Math.max(320, Math.floor(vh - hudFootprint));
+
+  stage.innerHTML = '<div id="book" style="height:' + bh + 'px;flex-shrink:0;"></div><div id="hud" style="flex-shrink:0;"><button id="prev">←</button><span id="pinfo"></span><button id="next">→</button></div>';
+  const book = document.getElementById('book');
+
+  const probe = document.createElement('div');
+  probe.className = 'page';
+  probe.style.position = 'fixed';
+  probe.style.left = '-9999px';
+  probe.style.top = '0';
+  probe.style.width = bw + 'px';
+  probe.style.height = bh + 'px';
+  probe.style.visibility = 'hidden';
+  const longestLabel = DATA.chapters.reduce((a,c)=> c.name.length > a.length ? c.name : a, '');
+  probe.innerHTML = '<div class="pg-header">' + longestLabel + '</div><div class="pg-body"></div><div class="pg-footer">0</div>';
+  document.body.appendChild(probe);
+  const probeBody = probe.querySelector('.pg-body');
+  const capH = probeBody.clientHeight;
+
+  const chapterPageSets = [];
+  const ld = document.getElementById('loading');
+  for (let ci = 0; ci < DATA.chapters.length; ci++) {
+    if (ld) { ld.style.display = 'block'; ld.innerHTML = '排版中… ' + (ci + 1) + ' / ' + DATA.chapters.length + '<div style="font-size:11px;margin-top:6px;color:#666;">v78.1 排版中</div>'; }
+    await new Promise(r => setTimeout(r, 0));   // let the browser paint + stay responsive
+    chapterPageSets.push(paginate(probeBody, capH, DATA.chapters[ci].blocks));
+  }
+  // ornaments on sparse chapter-end pages
+  chapterPageSets.forEach(pageSet => {
+    const last = pageSet[pageSet.length - 1];
+    last.push(maybeAddOrnament(probeBody, capH, last));
+  });
+  document.body.removeChild(probe);
+
+  const chapterPagesHtml = [];
+  const chapterPagesLabel = [];
+  const tocEntries = [];
+  const FRONT = 3;
+  chapterPageSets.forEach((pageSet, idx) => {
+    tocEntries.push({ lab: DATA.chapters[idx].lab, name: DATA.chapters[idx].name, page: FRONT + chapterPagesHtml.length + 1 });
+    pageSet.forEach(items => { chapterPagesHtml.push(items.join('')); chapterPagesLabel.push(DATA.chapters[idx].name); });
+  });
+
+  const allInner = [
+    `<img class="coverimg" src="${DATA.cover}">`,
+    DATA.title_html,
+    '__TOC__',
+    ...chapterPagesHtml,
+    DATA.colophon_html
+  ];
+  allInner[2] = buildToc(tocEntries);
+
+  const allLabels = [null, null, null, ...chapterPagesLabel, null];
+  book.innerHTML = allInner.map((inner, i) => `<div class="pgsheet" data-i="${i}">${chrome(i, inner, allLabels[i])}</div>`).join('');
+
+  state.sheets = Array.from(document.querySelectorAll('.pgsheet'));
+  state.TOTAL = state.sheets.length;
+  state.busy = false;
+  const target = keepCur ? Math.min(Math.max(0, keepCur), state.TOTAL - 1) : 0;
+  state.cur = target;
+  state.sheets.forEach((s, i) => s.classList.toggle('active', i === target));
+  info();
+  if (ld) ld.style.display = 'none';
+}
+
+function info() {
+  const el = document.getElementById('pinfo');
+  if (!el || el.dataset.editing === '1') return;
+  el.textContent = (state.cur === 0) ? '封面' : ('第 ' + (state.cur + 1) + ' / ' + state.TOTAL + ' 頁');
+}
+function openPageJump() {
+  const el = document.getElementById('pinfo');
+  if (!el || el.dataset.editing === '1') return;
+  el.dataset.editing = '1';
+  el.innerHTML = '<input id="pgoto" type="number" inputmode="numeric" min="1" max="' + state.TOTAL + '" value="' + (state.cur + 1) + '"><button id="pgo-btn">跳轉</button>';
+  const input = document.getElementById('pgoto');
+  input.focus(); input.select();
+  const commit = () => {
+    const v = parseInt(input.value, 10);
+    el.dataset.editing = '0';
+    if (!isNaN(v)) goTo(v); else info();
+  };
+  document.getElementById('pgo-btn').addEventListener('click', ev => { ev.stopPropagation(); commit(); });
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.stopPropagation(); commit(); }
+    if (ev.key === 'Escape') { el.dataset.editing = '0'; info(); }
+  });
+  input.addEventListener('click', ev => ev.stopPropagation());
+}
+
+function flip(dir) {
+  if (state.busy) return;
+  const next = state.cur + dir;
+  if (next < 0 || next >= state.TOTAL) return;
+  state.busy = true;
+  const prevSheet = state.sheets[state.cur];
+  const nextSheet = state.sheets[next];
+  prevSheet.classList.remove('active');
+  prevSheet.classList.add('leaving', dir > 0 ? 'leave-l' : 'leave-r');
+  nextSheet.classList.add('active', dir > 0 ? 'enter-r' : 'enter-l');
+  state.cur = next;
+  info();
+  setTimeout(() => {
+    prevSheet.classList.remove('leaving', 'leave-l', 'leave-r');
+    nextSheet.classList.remove('enter-r', 'enter-l');
+    state.busy = false;
+  }, 340);
+}
+
+function goTo(page) {
+  const target = Math.max(0, Math.min(state.TOTAL - 1, page - 1));
+  state.sheets.forEach(s => s.classList.remove('leaving', 'leave-l', 'leave-r', 'enter-r', 'enter-l', 'active'));
+  state.sheets[target].classList.add('active');
+  state.cur = target;
+  info();
+}
+
+// --- event listeners: bound exactly ONCE, read live `state` ---
+document.addEventListener('click', e => {
+  if (e.target.id === 'next') return flip(1);
+  if (e.target.id === 'prev') return flip(-1);
+  if (e.target.id === 'pinfo') return openPageJump();
+  if (e.target.closest('#pgoto, #pgo-btn')) return;
+  const tocRow = e.target.closest('.toc-row');
+  if (tocRow) return goTo(parseInt(tocRow.dataset.page));
+  if (e.target.closest('a, button')) return;
+  const book = document.getElementById('book');
+  if (!book) return;
+  const r = book.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+  flip(e.clientX - r.left > r.width / 2 ? 1 : -1);
+});
+let tx = null, ty = null;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (tx === null) return;
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) flip(dx < 0 ? 1 : -1);
+  tx = null; ty = null;
+}, {passive:true});
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') flip(1);
+  if (e.key === 'ArrowLeft') flip(-1);
+});
+
+// --- rebuild ONLY on a genuine orientation/size change ---
+let lastW = window.innerWidth, lastOrientation = (screen.orientation && screen.orientation.type) || '';
+let rtimer = null;
+function maybeRebuild() {
+  clearTimeout(rtimer);
+  rtimer = setTimeout(() => {
+    const w = window.innerWidth;
+    const o = (screen.orientation && screen.orientation.type) || '';
+    if (Math.abs(w - lastW) > 60 || o !== lastOrientation) {
+      lastW = w; lastOrientation = o;
+      if (!window.__building2) { window.__building2 = true; build(state.cur).finally(() => { window.__building2 = false; }); }
+    }
+  }, 400);
+}
+window.addEventListener('resize', maybeRebuild);
+window.addEventListener('orientationchange', maybeRebuild);
+
+async function safeBuild() {
+  if (window.__building || window.__built) return;
+  window.__building = true;
+  try { await build(state.cur); window.__built = true; }
+  catch (e) {
+    window.__building = false;
+    const l = document.getElementById('loading');
+    if (l) { l.style.display = 'block'; l.textContent = '載入失敗：' + (e && e.message ? e.message : e); }
+  }
+}
+function showLoadError(msg) {
+  const l = document.getElementById('loading');
+  if (l && getComputedStyle(l).display !== 'none') {
+    l.innerHTML = '載入異常：' + msg + '<div style="font-size:12px;margin-top:8px;color:#999;">請完全關閉本頁再重新開啟；如仍然卡住，請回報以上文字。</div>';
+  }
+}
+window.addEventListener('error', ev => {
+  if (!window.__built) showLoadError(ev.message || 'script error');
+});
+function ready() {
+  // Some in-app webviews never resolve document.fonts.ready -> stuck on "排版中…".
+  // Always force a build after 1.5s as a fallback; first one to run wins.
+  setTimeout(safeBuild, 1500);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(safeBuild)));
+  } else {
+    setTimeout(safeBuild, 200);
+  }
+  // watchdog: if 20s after DOM the build still hasn't finished, surface it instead of spinning forever
+  setTimeout(() => { if (!window.__built) showLoadError('排版超時（20秒未完成）'); }, 20000);
+}
+ready();
+</script>
+</body>
+</html>
