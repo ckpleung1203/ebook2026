@@ -81,6 +81,12 @@ body { background:#16151d; overflow:hidden; font-family:"PingFang TC","Microsoft
 .srch-sn { color:#cfc9da; font-size:13px; margin-top:4px; line-height:1.5; }
 mark.sr-hit { background:#b9994f; color:#1b1a22; border-radius:3px; padding:0 1px; }
 </style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-webapp-capable" content="yes">
+<meta name="apple-mobile-webapp-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-webapp-title" content="賺錢趨勢2026">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 </head>
 <body>
 <div id="stage"></div>
@@ -463,6 +469,21 @@ function ready() {
   setTimeout(() => { if (!window.__built) showLoadError('排版超時（20秒未完成）'); }, 20000);
 }
 ready();
+</script>
+<script>
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
+      var t=document.createElement('div');
+      t.textContent='✅ 離線可讀已啟用 — 之後斷網都開到呢本書';
+      t.style.cssText='position:fixed;left:12px;bottom:14px;z-index:99999;background:#1f2a20;color:#8fd694;border:1px solid #4a6b4a;border-radius:8px;padding:8px 12px;font-size:12px;max-width:70vw;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.5);opacity:0;transition:opacity .4s;pointer-events:none';
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){t.style.opacity='1';});
+      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},500)},5000);
+    }).catch(function(){});
+  });
+})();
 </script>
 </body>
 </html>

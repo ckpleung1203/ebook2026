@@ -1,0 +1,16 @@
+{
+  "name": "全球賺錢趨勢 2026",
+  "short_name": "賺錢趨勢2026",
+  "description": "梁卓堅 編著・全球賺錢趨勢 2026 電子書（離線可讀）",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#16151d",
+  "theme_color": "#16151d",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
