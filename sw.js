@@ -1,5 +1,5 @@
 /* 全球賺錢趨勢 2026 — offline reader service worker */
-const CACHE = 'ebook2026-v83';
+const CACHE = 'ebook2026-v84';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
