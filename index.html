@@ -473,14 +473,38 @@ ready();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
+  function toast(msg, green){
+    var t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;left:12px;bottom:14px;z-index:99999;background:'+(green?'#1f2a20':'#2a2416')+';color:'+(green?'#8fd694':'#e8c86a')+';border:1px solid '+(green?'#4a6b4a':'#6b5c2a')+';border-radius:8px;padding:8px 12px;font-size:12px;max-width:70vw;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.5);opacity:0;transition:opacity .4s;pointer-events:none';
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){t.style.opacity='1';});
+    setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},500)},8000);
+  }
+  function controlled(){
+    if(navigator.serviceWorker.controller) return Promise.resolve();
+    return new Promise(function(res){
+      navigator.serviceWorker.addEventListener('controllerchange', function h(){ navigator.serviceWorker.removeEventListener('controllerchange', h); res(); });
+    });
+  }
+  async function coreReady(){
+    try{
+      var a = await caches.match('./index.html',{ignoreSearch:true});
+      var b = await caches.match('./cover.jpg',{ignoreSearch:true});
+      return !!(a && b);
+    }catch(e){ return false; }
+  }
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('./sw.js').then(function(reg){
-      var t=document.createElement('div');
-      t.textContent='✅ 離線可讀已啟用 — 之後斷網都開到呢本書';
-      t.style.cssText='position:fixed;left:12px;bottom:14px;z-index:99999;background:#1f2a20;color:#8fd694;border:1px solid #4a6b4a;border-radius:8px;padding:8px 12px;font-size:12px;max-width:70vw;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.5);opacity:0;transition:opacity .4s;pointer-events:none';
-      document.body.appendChild(t);
-      requestAnimationFrame(function(){t.style.opacity='1';});
-      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},500)},5000);
+      // force immediate update check so a single online visit upgrades an old SW
+      var u = reg.update ? reg.update().catch(function(){}) : Promise.resolve();
+      return u.then(function(){ return navigator.serviceWorker.ready; })
+        .then(function(){ return Promise.race([controlled(), new Promise(function(r){ setTimeout(r, 15000); })]); })
+        .then(function(){ return coreReady(); })
+        .then(function(ok){
+          if(ok){ toast('✅ 離線可讀已啟用 — 封面同全書已存好，之後斷網都開到', true); }
+          else { toast('⏳ 離線副本準備緊 — 開住呢頁等幾秒，見到綠色提示先好斷網', false); }
+        });
     }).catch(function(){});
   });
 })();

@@ -1,5 +1,5 @@
 /* 全球賺錢趨勢 2026 — offline reader service worker */
-const CACHE = 'ebook2026-v85';
+const CACHE = 'ebook2026-v86';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './cover.jpg'];
 
 self.addEventListener('install', (e) => {
@@ -14,6 +14,8 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
       .then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => caches.open(CACHE))
+      .then((c) => c.addAll(CORE))   // self-heal: make sure every core asset is present
       .then(() => self.clients.claim())
   );
 });
